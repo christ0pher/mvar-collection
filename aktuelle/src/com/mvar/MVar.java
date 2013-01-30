@@ -1,4 +1,5 @@
-package com.mvar;
+package src.com.mvar;
+
 
 public class MVar<T> {
 	boolean empty;
@@ -7,12 +8,23 @@ public class MVar<T> {
 	Object checkUse 	= new Object(),
 		   changeUse 	= new Object();
 	
+	public MVar(T newElem) {
+		empty = false;
+		content = newElem;
+	}
+	
+	public MVar()
+	{
+		empty = true;
+		content = null;
+	}
+
 	public T read() throws InterruptedException {
 		synchronized (checkUse) {
 			while(empty)
 				checkUse.wait();
 			synchronized (changeUse) {
-				checkUse.notifyAll();
+				checkUse.notify();
 				return content;
 			}
 		}
@@ -25,7 +37,7 @@ public class MVar<T> {
 			synchronized (checkUse) {
 				T tmp = content;
 				content = o;
-				checkUse.notifyAll();
+				checkUse.notify();
 				return tmp;
 			}
 		}
@@ -40,7 +52,7 @@ public class MVar<T> {
 			synchronized (checkUse) {
 				empty = false;
 				content = o;
-				checkUse.notifyAll();
+				checkUse.notify();
 			}
 		}
 	}
@@ -57,7 +69,7 @@ public class MVar<T> {
 			}
 			synchronized (changeUse) {
 				empty = true;
-				checkUse.notifyAll();
+				checkUse.notify();
 				return content;
 			}
 		}
@@ -69,7 +81,7 @@ public class MVar<T> {
 				return null;
 			synchronized (changeUse) {
 				empty = true;
-				changeUse.notifyAll();
+				changeUse.notify();
 				return content;
 			}
 		}
@@ -81,7 +93,7 @@ public class MVar<T> {
 				checkUse.wait();
 			synchronized (changeUse) {
 				empty = true;
-				changeUse.notifyAll();
+				changeUse.notify();
 				return content;
 			}
 		}
@@ -95,7 +107,7 @@ public class MVar<T> {
 			synchronized (checkUse){
 				empty = false;
 				content = o;						
-				checkUse.notifyAll();
+				checkUse.notify();
 				return true;
 			}
 		}
@@ -108,7 +120,7 @@ public class MVar<T> {
 			synchronized (checkUse) {
 				empty = false;
 				content = o;
-				checkUse.notifyAll();
+				checkUse.notify();
 			}
 		}
 	}
