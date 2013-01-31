@@ -22,7 +22,7 @@ erlchatter(Clients) ->
 			erlchatter(Clients++Clientlist);
 		{newling,Chatters} -> 
 			All = Clients++[self()]
-		    NewClients = Clients++lists:filter(fun(X) -> lists:member(X, All) end, Chatters)
+		    NewClients = Clients++lists:filter(fun(X) -> not lists:member(X, All) end, Chatters)
 			erlchatter(NewClients);
 		{printClients} -> io:format("The clients ~w~n",[Clients]),
 			erlchatter(Clients)
