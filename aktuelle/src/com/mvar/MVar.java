@@ -112,6 +112,28 @@ public class MVar<T> {
 			}
 		}
 	}
-
+	
+	public synchronized T take2() throws InterruptedException
+	{
+		while (empty)
+			this.wait();
+		empty = true;
+		this.notifyAll();
+		return content;
+	}
+	
+	
+	
+	
+	public synchronized void put2(T o) throws InterruptedException
+	{
+		
+		while (!empty)
+			this.wait();
+		empty = false;
+		content = o;
+		this.notifyAll();
+	
+	}
 	
 }
