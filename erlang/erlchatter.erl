@@ -7,7 +7,7 @@ erlchatter(Clients) ->
 	receive
 		% new Chatter
 		{register, Erlchatter} -> 
-			lists:map(fun(C) -> C ! {newling, Erlchatter} end, Clients),
+			lists:map(fun(C) -> C ! {newling, Clients++[Erlchatter]++[self()]} end, Clients),
 			Erlchatter ! {otherClients, Clients++[self()]},
 			erlchatter(Clients++[Erlchatter]);
 		% send a message
@@ -20,8 +20,10 @@ erlchatter(Clients) ->
 		% 
 		{otherClients, Clientlist} -> 
 			erlchatter(Clients++Clientlist);
-		{newling,Chatter} -> 
-			erlchatter(Clients++[Chatter]);
+		{newling,Chatters} -> 
+			All = Clients++[self()]
+		    NewClients = Clients++lists:filter(fun(X) -> lists:member(X, All) end, Chatters)
+			erlchatter(NewClients);
 		{printClients} -> io:format("The clients ~w~n",[Clients]),
 			erlchatter(Clients)
 	end.
