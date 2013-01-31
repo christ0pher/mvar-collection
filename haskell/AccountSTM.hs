@@ -10,7 +10,7 @@ newAccount = do
 	
 getBalance :: Account -> STM Int
 getBalance acc = do
-	readTvar acc
+	readTVar acc
 	
 deposit :: Account -> Int -> STM ()
 deposit acc amount = do
@@ -35,13 +35,41 @@ limitedWithdraw acc amount = do
 	else do
 		return False
 
+collectedLimitedTransfer :: [Account] -> Account -> Int -> STM Bool
+collectedLimitedTransfer [] _ _ =
+	return False
+collectedLimitedTransfer (headAcc:accs) to am = do
+	bal <- getBalance headAcc
+	if bal >= am then do
+		transfer headAcc to am
+		return True
+	else do
+		res <- collectedLimitedTransfer accs to (am - (max bal 0))
+		if res == True then do
+			transfer headAcc to (max bal 0)
+			return True
+		else do
+			return False
+	
+		
 main = do
-	acc1 <- newAccount
-	acc2 <- newAccount
-	atomically (do deposit acc1 100
-					transfer acc1 acc2 500)
+	acc1 <- atomically(newAccount)
+	acc2 <- atomically(newAccount)
+	acc3 <- atomically (newAccount)
+	atomically (do deposit acc1 100; transfer acc1 acc2 500)
 	bool <- atomically (limitedWithdraw acc1 600)
+	-- acc1 -400
+	-- acc2 500
+	-- acc3 0
 	bal1 <- atomically (getBalance acc1)
-	bal2 <- atomically (getBalance acc2)
+	bal2 <- atomically (getBalance acc2)	
+	let fromList = [acc1, acc2, acc1]
+	transferSuccess <- atomically(collectedLimitedTransfer fromList acc3 501)
+
+	bal3 <- atomically (getBalance acc3)	
+
+	
+	putStrLn ("Transfer: " ++ show transferSuccess)
 	print bal1
 	print bal2
+	print bal3

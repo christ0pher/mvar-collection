@@ -1,4 +1,4 @@
---Änlich wie IO gibt es auch STM(Andere Mondae für Transaktion, Software transactional memory)
+--Änlich wie IO gibt es auch STM(Andere Monade für Transaktion, Software transactional memory)
 --In der STM Welt gibt es Transaktionsvariablen:
 --	data TVar -- abstract
 --		wie MVar, können aber nicht leer sein!
