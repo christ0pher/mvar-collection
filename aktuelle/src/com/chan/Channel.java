@@ -1,26 +1,47 @@
-package com.chan;
+package src.com.chan;
 
-import com.mvar.MVar;
+import src.com.mvar.MVar;
 
 public class Channel<T>
 {
-	MVar<ChannelElement<T>> reader;
-	MVar<ChannelElement<T>> writer;
+	MVar<MVar<ChannelElement<T>>> reader;
+	MVar<MVar<ChannelElement<T>>> writer;
 	
 	public Channel() throws InterruptedException
 	{
-		ChannelElement<T> newEmptyTarget = new ChannelElement<T>();
-		reader = new MVar<ChannelElement<T>>();
-		reader.put(newEmptyTarget);
+		MVar<ChannelElement<T>> hole = new MVar<ChannelElement<T>>();
 		
-		writer = new MVar<ChannelElement<T>>();
-		writer.put(newEmptyTarget);
+		reader = new MVar<MVar<ChannelElement<T>>>();
+		reader.put(hole);
+		
+		writer = new MVar<MVar<ChannelElement<T>>>();
+		writer.put(hole);
 	}
 	
-	public void put(T elem) throws InterruptedException
+	public void write(T elem) throws InterruptedException
 	{
+		MVar<ChannelElement<T>> writeHole = writer.take();
+		MVar<ChannelElement<T>> newEmpty = new MVar<ChannelElement<T>>();
+		ChannelElement<T> newElem = new ChannelElement<T>(elem, newEmpty);
 		
-		ChannelElement<T> hole = writer.take();
-		hole.value = elem;
+		writeHole.put(newElem);
+		writer.put(newEmpty);
+	}
+	
+	public T read() throws InterruptedException 
+	{
+		MVar<ChannelElement<T>> readHole = reader.take();
+		ChannelElement<T> elem = readHole.take();		
+		reader.put(elem.next);		
+		return elem.value;
+		
+	}
+	
+	public boolean isChannelFilled() throws InterruptedException
+	{
+		MVar<ChannelElement<T>> readerHole = reader.read();
+		MVar<ChannelElement<T>> writerHole = writer.read();
+		
+		return readerHole != writerHole;
 	}
 }

@@ -1,4 +1,4 @@
-package com.mvar;
+package src.com.mvar;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package com.mvar;
+package src.com.mvar;
 
 public class MVarTestworkerTry implements Runnable {
 

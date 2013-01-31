@@ -1,4 +1,4 @@
-package com.syncvar;
+package src.com.syncvar;
 
 public class SyncVarMain
 {
