@@ -18,10 +18,10 @@ public class MVarTestworker implements Runnable {
 		Integer other_id;
 		while (true) {
 			try {
-				other_id = contentHolder.take();
+				other_id = contentHolder.take2();
 				stat.increase(id.toString());
 //				System.out.println(id+" takes Other ID: "+other_id);
-				contentHolder.put(id);
+				contentHolder.put2(id);
 				stat.increase(id.toString());
 //				System.out.println(id+" puts his id");	
 			} catch (InterruptedException e) {
