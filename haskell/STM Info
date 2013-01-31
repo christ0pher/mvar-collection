@@ -1,0 +1,10 @@
+--€nlich wie IO gibt es auch STM(Andere Mondae fŸr Transaktion, Software transactional memory)
+--In der STM Welt gibt es Transaktionsvariablen:
+--	data TVar -- abstract
+--		wie MVar, kšnnen aber nicht leer sein!
+--	newTVar :: STM(Tvar a)				|
+--	readTVar :: TVar a -> STM a			| Basis-Transaktionen	
+--	writeTVar :: Tvar a -> a -> STM a	|
+--		Kšnnen in STM sequentiellen zu komplexen Transaktionen komponiert werden (im do)
+
+atomically :: STM a -> IO a
